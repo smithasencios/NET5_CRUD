@@ -1,0 +1,23 @@
+﻿#out - required in order to copy Jenkinsfile dotnet publish output
+**/*.bak
+**/.DS_Store
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/README.md
+**/TestResults
+*.Dockerfile
+*.env
+*.pem
+*.dockerignore
+.git
+docker-compose*.yml
+Dockerfile
+Jenkinsfile
+lcov.info
+lcov.opencover.xml
+Properties/launchSettings.json
+publish
+tempkey.rsa

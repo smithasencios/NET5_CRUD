@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+    crud-db:
+        image: postgres:latest
+        ports:
+            - "5436:5432"
+        environment:
+            - POSTGRES_USER=user
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=crud
+        volumes:            
+            - crud-db:/var/lib/postgresql/data/
+        restart: always   
+    redis:
+        image: "redis:alpine"
+        ports:
+            - "6379:6379"
+    crud-elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+        ports:
+           - "9201:9200"
+           - "9301:9300"
+        volumes:
+            - es-data:/usr/share/elasticsearch/data
+        environment:
+            - "discovery.type=single-node"  
+    crud-api:
+        build:
+            context: .
+            dockerfile: src/dev.Dockerfile    
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=http://0.0.0.0:5000  
+            - ALLOWEDHOSTS=* 
+            - ElasticSearchServer=http://crud-elasticsearch:9200
+            - RedisServer=redis:6379
+            - NpgSqlConnection=Host=crud-db; Port=5432; database=crud;Username=user;Command Timeout=0;
+            - NpgSqlPassword=password
+        ports:
+            - "5103:5000"
+        volumes:
+            - .:/app
+        working_dir: /app/src/Api
+        restart: always
+        depends_on:
+            - crud-db
+            - redis 
+            - crud-elasticsearch            
+volumes:
+  crud-db:
+    driver: local 
+  es-data:
+    driver: local    
